@@ -1,6 +1,7 @@
 # Preditction-Trend-News
 
 Proyek Akhir Oleh:
+
 M. Fauzan Delfani
 
 --------
