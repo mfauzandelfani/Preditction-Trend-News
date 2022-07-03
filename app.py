@@ -31,7 +31,12 @@ stemmer = factory2.create_stemmer()
 url = ["https://www.suara.com/rss",
        "https://www.antaranews.com/rss/top-news.xml",
        "https://www.cnbcindonesia.com/news/rss",
-       "https://www.suara.com/rss/news"
+       "https://www.suara.com/rss/news",
+       "https://www.vice.com/id_id/rss",  
+       "https://www.cnnindonesia.com/nasional/rss",
+       "https://www.cnbcindonesia.com/news/rss",
+       "https://www.jawapos.com/nasional/rss",
+       "https://lapi.kumparan.com/v2.0/rss/"
    
        ]
   
@@ -76,8 +81,8 @@ te_ary = te.fit(dataset).transform(dataset)
 df = pd.DataFrame(te_ary, columns=te.columns_)
 
 
-apriori(df, min_support=0.01, use_colnames=True)
-frequent_itemsets = apriori(df, min_support=0.01, use_colnames=True)
+apriori(df, min_support=0.005, use_colnames=True)
+frequent_itemsets = apriori(df, min_support=0.005, use_colnames=True)
 frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
 frequent_itemsets
 
@@ -118,6 +123,7 @@ for x in range(len(hasil)):
 
 data = kolombaru
 
+'''
 sw = set(STOPWORDS)
 sw.update(['antecedents','consequents','columns','rows','length',''])
 wordcloud = WordCloud(collocations = False, stopwords = sw, width=3000, height=800, max_font_size=400, background_color='white',
@@ -128,13 +134,7 @@ plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
 plt.tight_layout(pad=0)
 #plt.show()
-
-import matplotlib.pyplot as plt
-import io
-import urllib, base64
-import requests, jsonify
-from requests.exceptions import HTTPError
-import os
+'''
 
 app = Flask(__name__)
 headings = ('Antecedents', 'Consequents', 'Length')
