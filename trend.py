@@ -16,14 +16,26 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import numpy as np
 from wordcloud.wordcloud import STOPWORDS
+import pendulum
+from datetime import datetime
+from time import time, sleep
 
-factory = StopWordRemoverFactory()
-factory2 = StemmerFactory()
-stopword = factory.create_stop_word_remover()
-stemmer = factory2.create_stemmer()
+data = []
+title = []
+date = []
+list1 = []
+list2 = []
+time = []
+kolombaru = []
+word = []
 
-#enter URL
-url = ["https://www.suara.com/rss",
+def scraping():
+  factory = StopWordRemoverFactory()
+  factory2 = StemmerFactory()
+  stopword = factory.create_stop_word_remover()
+  stemmer = factory2.create_stemmer()
+  #enter URL
+  url = ["https://www.suara.com/rss",
        "https://www.antaranews.com/rss/top-news.xml",
        "https://www.cnbcindonesia.com/news/rss",
        "https://www.suara.com/rss/news",
@@ -33,11 +45,8 @@ url = ["https://www.suara.com/rss",
        "https://www.jawapos.com/nasional/rss",
        "https://lapi.kumparan.com/v2.0/rss/"
        ]
-  
-data = []
-title = []
-date = []
-for i in url:
+ 
+  for i in url:
     print(i)
     resp = requests.get(i)
     soup = BeautifulSoup(resp.content, features="xml")
@@ -62,38 +71,72 @@ for i in url:
       tokens = nltk.tokenize.word_tokenize(output)
       data.append(tokens)
 
-column_names = ['Title',#'Date',
+
+def hasil():
+    global data
+    column_names = ['Title',#'Date',
                 'Item']
-hasil = {"Title": title,#"Date": date, 
+    hasil = {"Title": title,#"Date": date, 
         "Item": data}
-berita = pd.DataFrame(hasil, columns = column_names)        
-#print (berita)    
-dataset = berita['Item']
+    berita = pd.DataFrame(hasil, columns = column_names)        
+    #print (berita)    
+    dataset = berita['Item']
 
-te = TransactionEncoder()
-te_ary = te.fit(dataset).transform(dataset)
-df = pd.DataFrame(te_ary, columns=te.columns_)
+    te = TransactionEncoder()
+    te_ary = te.fit(dataset).transform(dataset)
+    df = pd.DataFrame(te_ary, columns=te.columns_)
+
+    apriori(df, min_support=0.005, use_colnames=True)
+    frequent_itemsets = apriori(df, min_support=0.005, use_colnames=True)
+    frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
+    frequent_itemsets
+
+    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
+    hasil = pd.DataFrame(rules)
+    hasil = hasil.drop(columns=['conviction','leverage','lift','confidence','support','consequent support','antecedent support'], axis=1, inplace=False)
+    hasil['length'] = hasil['antecedents'].apply(lambda x: len(x))+hasil['consequents'].apply(lambda y: len(y))
+    hasil = hasil[(hasil['length'] >= 3) &(hasil['length'] <= 7)]
+    print(hasil)
+
+    
+    kolom1 = list(hasil['antecedents'])
+    
+    for i in kolom1:
+      list1.append(list(i))
+      #print(list1)
+
+    kolom2 = list(hasil['consequents'])
+    
+    for i in kolom2:
+      list2.append(list(i))
+      #print(list2)
+
+    ist = pendulum.timezone('Asia/Jakarta')
+    
+    for i in kolom1:
+      time.append(datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S'))
+
+    length = np.array(hasil['length'])
 
 
-apriori(df, min_support=0.005, use_colnames=True)
-frequent_itemsets = apriori(df, min_support=0.005, use_colnames=True)
-frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
-frequent_itemsets
+    for x in range(len(hasil)):
+      test = [list1[x],list2[x],time[x],length[x]]
+      test2 = [list1[x],list2[x]]
+      kolombaru.append(test)
+      word.append(test2)
 
-rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
-hasil = pd.DataFrame(rules)
-hasil = hasil.drop(columns=['conviction','leverage','lift','confidence','support','consequent support','antecedent support'], axis=1, inplace=False)
-hasil['length'] = hasil['antecedents'].apply(lambda x: len(x))+hasil['consequents'].apply(lambda y: len(y))
-hasil = hasil[(hasil['length'] >= 3) &(hasil['length'] <= 7)]
+    data = kolombaru
+   
 
-print(hasil)
+scraping()
+hasil()
 
 
 sw = set(STOPWORDS)
 sw.update(['antecedents','consequents','columns','rows','length'])
 wordcloud = WordCloud(collocations = False, stopwords = sw, width=3000, height=800, max_font_size=200, background_color='white',
                         max_words=10000)
-wordcloud.generate(str(hasil))
+wordcloud.generate(str(word))
 plt.figure(figsize=(10,10))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
