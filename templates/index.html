@@ -51,7 +51,7 @@
             <h3 style="font-family:Fantasy; color: darkblue;">Berita Trends</h3>
             <!-- <img src="{{url_for('static',filename='images/Berita-Trend.svg')}}" alt="logo" width="500" height="600" /> -->
           </a>
-          <a class="navbar-brand brand-logo-mini" href="/index">
+          <a class="navbar-brand brand-logo-mini" href="{{url_for('home')}}">
 
             <img src="{{url_for('static',filename='images/favicon.png')}}" alt="logo" />
           </a>
@@ -128,6 +128,7 @@
                       <th>Antecedents</th>
                       <th>Consequents</th>
                       <th>Date</th>
+                      <th>Time</th>
                       <th>Length</th>
 
                     </tr>
@@ -207,7 +208,7 @@
         responsive: true,
 
         order: [
-          [3, 'desc']
+          [4, 'desc']
         ],
 
 

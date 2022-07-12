@@ -1,3 +1,5 @@
+from distutils.log import error
+from tkinter import Variable
 import requests
 from textblob import TextBlob
 from bs4 import BeautifulSoup
@@ -18,7 +20,11 @@ import numpy as np
 from wordcloud.wordcloud import STOPWORDS
 import pendulum
 from datetime import datetime
-from time import time, sleep
+import time
+import json
+from database import *
+import schedule
+
 
 data = []
 title = []
@@ -28,6 +34,7 @@ list2 = []
 time = []
 kolombaru = []
 word = []
+
 
 def scraping():
   factory = StopWordRemoverFactory()
@@ -44,8 +51,8 @@ def scraping():
        "https://www.cnbcindonesia.com/news/rss",
        "https://www.jawapos.com/nasional/rss",
        "https://lapi.kumparan.com/v2.0/rss/"
-       ]
  
+  ]
   for i in url:
     print(i)
     resp = requests.get(i)
@@ -71,74 +78,91 @@ def scraping():
       tokens = nltk.tokenize.word_tokenize(output)
       data.append(tokens)
 
-
-def hasil():
-    global data
-    column_names = ['Title',#'Date',
+  
+  column_names = ['Title',#'Date',
                 'Item']
-    hasil = {"Title": title,#"Date": date, 
+  hasil = {"Title": title,#"Date": date, 
         "Item": data}
-    berita = pd.DataFrame(hasil, columns = column_names)        
+  berita = pd.DataFrame(hasil, columns = column_names)        
     #print (berita)    
-    dataset = berita['Item']
+  dataset = berita['Item']
 
-    te = TransactionEncoder()
-    te_ary = te.fit(dataset).transform(dataset)
-    df = pd.DataFrame(te_ary, columns=te.columns_)
+  te = TransactionEncoder()
+  te_ary = te.fit(dataset).transform(dataset)
+  df = pd.DataFrame(te_ary, columns=te.columns_)
 
-    apriori(df, min_support=0.005, use_colnames=True)
-    frequent_itemsets = apriori(df, min_support=0.005, use_colnames=True)
-    frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
-    frequent_itemsets
+  apriori(df, min_support=0.005, use_colnames=True)
+  frequent_itemsets = apriori(df, min_support=0.005, use_colnames=True)
+  frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
+  frequent_itemsets
 
-    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
-    hasil = pd.DataFrame(rules)
-    hasil = hasil.drop(columns=['conviction','leverage','lift','confidence','support','consequent support','antecedent support'], axis=1, inplace=False)
-    hasil['length'] = hasil['antecedents'].apply(lambda x: len(x))+hasil['consequents'].apply(lambda y: len(y))
-    hasil = hasil[(hasil['length'] >= 3) &(hasil['length'] <= 7)]
-    print(hasil)
+  rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
 
+ 
+  hasil = pd.DataFrame(rules)
+  hasil = hasil.drop(columns=['conviction','leverage','lift','confidence','support','consequent support','antecedent support'], axis=1, inplace=False)
+  
+  ist = pendulum.timezone('Asia/Jakarta')
+  hasil['date'] = datetime.now(ist).strftime('%Y-%m-%d')
+  hasil['time'] = datetime.now(ist).strftime('%H:%M:%S')
     
-    kolom1 = list(hasil['antecedents'])
+  hasil['length'] = hasil['antecedents'].apply(lambda x: len(x))+hasil['consequents'].apply(lambda y: len(y))
+  hasil = hasil[(hasil['length'] >= 3) &(hasil['length'] <= 7)]
+  
+  hasil['antecedents'] = hasil['antecedents'].astype('string')
+  hasil['consequents'] = hasil['consequents'].astype('string')
+ 
+  print(hasil)
+  print(hasil.dtypes)
+    # print('=======')
+    # print(list(hasil))
     
-    for i in kolom1:
-      list1.append(list(i))
-      #print(list1)
+# creating column list for insertion
+  cols = "`,`".join([str(i) for i in hasil.columns.tolist()])
 
-    kolom2 = list(hasil['consequents'])
-    
-    for i in kolom2:
-      list2.append(list(i))
-      #print(list2)
-
-    ist = pendulum.timezone('Asia/Jakarta')
-    
-    for i in kolom1:
-      time.append(datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S'))
-
-    length = np.array(hasil['length'])
+# Insert DataFrame recrds one by one.
+  for i,row in hasil.iterrows():
+    sql = "INSERT INTO `trends` (`" +cols + "`) VALUES (" + "%s,"*(len(row)-1) + "%s)"
+    cursor.execute(sql, tuple(row))
 
 
-    for x in range(len(hasil)):
-      test = [list1[x],list2[x],time[x],length[x]]
-      test2 = [list1[x],list2[x]]
-      kolombaru.append(test)
-      word.append(test2)
+  # the connection is not autocommitted by default, so we must commit to save our changes
+  sql2 = "UPDATE trends set antecedents = replace(antecedents, 'frozenset({', '');"
+  sql3 = "UPDATE trends set antecedents = replace(antecedents, '})', '');"
+  sql4 = "UPDATE trends set consequents = replace(consequents, 'frozenset({', '');"
+  sql5 = "UPDATE trends set consequents = replace(consequents, '})', '');"
+  
+  cursor.execute(sql2)  
+  cursor.execute(sql3)
+  cursor.execute(sql4)
+  cursor.execute(sql5)
+  conn.commit()
+  
 
-    data = kolombaru
-   
+def wordcloud():
+  
+  wordcloudsql = 'select antecedents, consequents from trends'
+  cursor.execute(wordcloudsql) 
+  cursor.conn.commit()
+  rv = cursor.fetchall()
+  cursor.close()
 
-scraping()
-hasil()
-
-
-sw = set(STOPWORDS)
-sw.update(['antecedents','consequents','columns','rows','length'])
-wordcloud = WordCloud(collocations = False, stopwords = sw, width=3000, height=800, max_font_size=200, background_color='white',
+  #sw = set(STOPWORDS)
+  #sw.update("'")
+  wordcloud = WordCloud(collocations = False, width=3000, height=800, max_font_size=200, background_color='white',
                         max_words=10000)
-wordcloud.generate(str(word))
-plt.figure(figsize=(10,10))
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis("off")
-plt.tight_layout(pad=0)
-plt.show()  
+  wordcloud.generate(str(rv))
+  plt.figure(figsize=(10,10))
+  plt.imshow(wordcloud, interpolation='bilinear')
+  plt.axis("off")
+  plt.tight_layout(pad=0)
+  plt.show()      
+
+
+# from apscheduler.schedulers.blocking import BlockingScheduler
+
+# scheduler = BlockingScheduler()
+# scheduler.add_job(scraping, 'interval', minutes=5)
+# scheduler.start()
+scraping()
+#wordcloud()
