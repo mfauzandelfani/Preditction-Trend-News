@@ -15,7 +15,7 @@ CORS(app)
 
 app.env = "development"
 
-cursor.execute('''Select DISTINCT antecedents, consequents, date, time, length from trends group by antecedents''')
+cursor.execute('''Select DISTINCT antecedents, consequents, date, time, length from trends where Date(date) = CURDATE() group by antecedents''')
 cursor.connection.commit()
 rv = cursor.fetchall()
 #Closing the cursor
