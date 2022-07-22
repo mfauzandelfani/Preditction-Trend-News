@@ -199,7 +199,7 @@ def wordcloud():
   plt.axis("off")
   plt.tight_layout(pad=0)
   #plt.show()     
-  plt.savefig('static/mharian.png')
+  plt.savefig('static/harian.png')
 
 # from apscheduler.schedulers.blocking import BlockingScheduler
 
