@@ -103,6 +103,7 @@
             <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="{{url_for('word')}}">Wordcloud</a></li>
+                <li class="nav-item"> <a class="nav-link" href="{{url_for('media')}}">Media</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{url_for('hari')}}">Harian</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{url_for('minggu')}}">Mingguan</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{url_for('bulan')}}">Bulanan</a>
@@ -128,7 +129,6 @@
                       <th>Antecedents</th>
                       <th>Consequents</th>
                       <th>Date</th>
-                      <th>Time</th>
                       <th>Length</th>
 
                     </tr>
@@ -208,7 +208,7 @@
         responsive: true,
 
         order: [
-          [4, 'desc']
+          [3, 'desc']
         ],
 
 

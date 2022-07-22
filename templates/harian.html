@@ -100,8 +100,10 @@
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item"> <a class="nav-link" href="{{url_for('word')}}">Wordcloud</a>
                                 </li>
+                                <li class="nav-item"> <a class="nav-link" href="{{url_for('media')}}">Media</a></li>
                                 <li class="nav-item"> <a class="nav-link" href="{{url_for('hari')}}">Harian</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="{{url_for('minggu')}}">Mingguan</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="{{url_for('minggu')}}">Mingguan</a>
+                                </li>
                                 <li class="nav-item"> <a class="nav-link" href="{{url_for('bulan')}}">Bulanan</a>
                                 </li>
                             </ul>
@@ -110,6 +112,7 @@
 
                 </ul>
             </nav>
+
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
@@ -117,21 +120,60 @@
                         <div class="col-sm-12">
                             <div class="home-tab">
                                 <hr>
+                                {%block content%}
+                                <form action='#' method="post">
+                                 
+                                    <select class="btn btn-white" id="exampleFormControlSelect1" name="fq">
+                                      <option selected value="3">Itemset</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                    </select>
+                                   
+                                        <select class="btn btn-white" id="exampleFormControlSelect1" name="sg">
+                                            <option selected value="5">Sorting</option>
+                                            <option>5</option>
+                                            <option>10</option>
+                                            <option>15</option>
+                                            <option>20</option>
+                                            <option>25</option>
+                                        </select>
+                    
+                                    <button type="submit" class="btn btn-secondary" value="submit">
+                                        Submit
+                                    </button>
 
 
-
+                                </form>
+                                {%endblock%}
                                 <div class="grid-margin grid-margin-lg- stretch-card"
                                     style="display:block; margin:auto;">
                                     <div class="card">
                                         <div class="card-body">
                                             <h4 class="card-title">Bar Chart Harian</h4>
-                                            <canvas id="myChart" width="200" height="65"></canvas>
+                                            <p> Grafik ini menampilkan kata-kata yang trending dari 3-7 kata</p>
+                                            <canvas id="myChart" width="200" height="60"></canvas>
                                         </div>
                                     </div>
                                 </div>
+                                <br>
+                                <div class="grid-margin grid-margin-lg- stretch-card"
+                                    style="display:block; margin:auto;">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Doughnut Chart Harian</h4>
+                                            <p> Grafik ini menjelaskan banyaknya jumlah kata yang trending setiap hari</p>
+                                            <canvas id="myChart2" width="200" height="60"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <!-- content-wrapper ends -->
                 <!-- partial:partials/_footer.html -->
@@ -192,29 +234,49 @@
     </script>
     <script>
         const ctx = document.getElementById('myChart').getContext('2d');
+        var datavalues = [];
+        var label = {{labels | tojson }};
+        var values = JSON.parse("{{ values }}");
+        values.forEach(element => {
+            datavalues.push(element[0])
+        });
+        // console.log(datavalues);
         const myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+
+                labels: label,
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
+                    label: 'Today Data',
+                    data: datavalues,
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)',
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)',
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)',
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)',
+                        'rgba(255, 99, 132)'
                     ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+
                     borderWidth: 1
                 }]
             },
@@ -227,6 +289,59 @@
             }
         });
     </script>
+
+
+    <script>
+        const ctx2 = document.getElementById('myChart2').getContext('2d');
+        var datavalues = [];
+
+        var values = JSON.parse("{{ values2 }}");
+        values.forEach(element => {
+            datavalues.push(element[0])
+        });
+        // console.log(datavalues);
+        const myChart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+
+                labels: ['Item 3', "Item 4", "Item 5", "Item 6", "Item 7"],
+                datasets: [{
+                    label: 'Today Data',
+                    data: datavalues,
+                    backgroundColor: [
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)',
+                        'rgba(255, 99, 132)',
+                        'rgba(54, 162, 235)',
+                        'rgba(255, 206, 86)',
+                        'rgba(75, 192, 192)',
+                        'rgba(153, 102, 255)',
+                        'rgba(255, 159, 64)'
+                    ],
+
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Chart.js Doughnut Chart'
+                    }
+                }
+            },
+        });
+    </script>
+
+
     <!-- End custom js for this page-->
 </body>
 
