@@ -1,30 +1,4 @@
-# from distutils.log import error
-# from tkinter import Variable
-import requests
-from textblob import TextBlob
-from bs4 import BeautifulSoup
-import pandas as pd
-import nltk
-from nltk.tokenize import word_tokenize
-nltk.download('punkt')
-from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-import re
-import pandas as pd
-from mlxtend.preprocessing import TransactionEncoder
-from mlxtend.frequent_patterns import apriori
-from mlxtend.frequent_patterns import association_rules
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-import numpy as np
-from wordcloud.wordcloud import STOPWORDS
-import pendulum
-from datetime import datetime
-import time
-import json
-from database import *
-import schedule
-
+from pack import *
 
 data = []
 title = []
@@ -66,7 +40,12 @@ def scraping():
   z = 0
   for i in url:
     print(i)
-    resp = requests.get(i)
+    session = requests.Session()
+    retry = Retry(connect=3, backoff_factor=0.5)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount(i, adapter)
+    session.mount(i, adapter)
+    resp =  session.get(i)
     soup = BeautifulSoup(resp.content, features="xml")
     items = soup.findAll('item')
     news_items = []
@@ -176,35 +155,5 @@ def scraping():
   cursor.execute(sql6)
   conn.commit()
 
-def wordcloud():
-  
-  wordcloudsql = 'select antecedents, consequents from trends where DATE(date) = curdate()'
-  cursor.execute(wordcloudsql) 
-  conn.commit()
-  rv = cursor.fetchall()
-  cursor.close()
+scraping()
 
- 
-  # sw = set(STOPWORDS)
-  # sw.update("`")
-  rv = str(rv)
-  res = re.sub(r"[^\w\s\<.*?>]", '', rv)
-  print(res)
-  
-  wordcloud = WordCloud(collocations = False, width=1000, height=800, max_font_size=500, background_color='white',
-                        max_words=10000)
-  wordcloud.generate(res)
-  plt.figure(figsize=(10,10))
-  plt.imshow(wordcloud, interpolation='bilinear')
-  plt.axis("off")
-  plt.tight_layout(pad=0)
-  #plt.show()     
-  plt.savefig('static/harian.png')
-
-# from apscheduler.schedulers.blocking import BlockingScheduler
-
-# scheduler = BlockingScheduler()
-# scheduler.add_job(scraping, 'interval', minutes=5)
-# scheduler.start()
-#scraping()
-wordcloud()

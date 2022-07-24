@@ -64,9 +64,9 @@
         <ul class="navbar-nav">
           <li>
 
-            <h2 class="welcome-text"> <span class="text-black fw-bold">Headline
+            <h2 class="welcome-text"> <span class="text-secondary fw-bold">Headline
                 Trending</span></h2>
-            <h5 class="welcome-sub-text">Application performance this day </h5>
+            <p class="welcome-sub-text">Application performance this day </p>
           </li>
         </ul>
 
@@ -74,7 +74,11 @@
           data-bs-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
         </button>
+
+        
       </div>
+
+      
 
     </nav>
     <!-- partial -->
@@ -86,12 +90,19 @@
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('home')}}">
-              <i class="mdi mdi-grid-large menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
+           <li class="nav-item">
+             <a class="nav-link" href="{{url_for('home')}}">
+               <i class="mdi mdi-grid-large menu-icon"></i>
+               <span class="menu-title">Dashboard</span>
+             </a>
+           </li>
+
+             <li class="nav-item">
+               <a class="nav-link" href="{{url_for('berita')}}">
+                 <i class="menu-icon mdi mdi-card-text-outline"></i>
+                 <span class="menu-title">Berita Masuk</span>
+               </a>
+             </li>
           <li class="nav-item nav-category">Chart</li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
@@ -120,8 +131,13 @@
           <div class="row">
             <div class="col-sm-12">
               <div class="home-tab">
+                
+              
                 <hr>
-
+           <h4 class="text-center"> <span class="text-black fw-bold" >Temukan headline berita <br><br>trending hari ini
+              </span></h4>
+                <br>
+          
                 <table id="example" class="table table-striped " style="width:100%">
                   <thead>
                     <tr>

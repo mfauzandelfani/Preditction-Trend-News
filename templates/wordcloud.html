@@ -61,8 +61,8 @@
                 <ul class="navbar-nav">
                     <li>
 
-                        <h2 class="welcome-text"> <span class="text-black fw-bold">Wordcloud
-                                Trending</span></h2>
+                        <h2 class="welcome-text"> <span class="text-secondary fw-bold">Wordcloud
+                            </span></h2>
                         <h5 class="welcome-sub-text">Application performance this day </h5>
                     </li>
                 </ul>
@@ -81,48 +81,61 @@
 
             <!-- partial -->
             <!-- partial:partials/_sidebar.html -->
-            <nav class="sidebar sidebar-offcanvas" id="sidebar">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('home')}}">
-                            <i class="mdi mdi-grid-large menu-icon"></i>
-                            <span class="menu-title">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item nav-category">Chart</li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
-                            aria-controls="ui-basic">
-                            <i class="menu-icon mdi mdi-chart-line"></i>
-                            <span class="menu-title">Grafik</span>
-                            <i class="menu-arrow"></i>
-                        </a>
-                        <div class="collapse" id="ui-basic">
-                            <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="{{url_for('word')}}">Wordcloud</a>
-                                </li>
-                                <li class="nav-item"> <a class="nav-link" href="{{url_for('media')}}">Media</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="{{url_for('hari')}}">Harian</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="{{url_for('minggu')}}">Mingguan</a>
-                                </li>
-                                <li class="nav-item"> <a class="nav-link" href="{{url_for('bulan')}}">Bulanan</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
+               <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                   <ul class="nav">
+                       <li class="nav-item">
+                           <a class="nav-link" href="{{url_for('home')}}">
+                               <i class="mdi mdi-grid-large menu-icon"></i>
+                               <span class="menu-title">Dashboard</span>
+                           </a>
+                       </li>
 
-                </ul>
-            </nav>
+                       <li class="nav-item">
+                           <a class="nav-link" href="{{url_for('berita')}}">
+                               <i class="menu-icon mdi mdi-card-text-outline"></i>
+                               <span class="menu-title">Berita Masuk</span>
+                           </a>
+                       </li>
+                       <li class="nav-item nav-category">Chart</li>
+                       <li class="nav-item">
+                           <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                               aria-controls="ui-basic">
+                               <i class="menu-icon mdi mdi-chart-line"></i>
+                               <span class="menu-title">Grafik</span>
+                               <i class="menu-arrow"></i>
+                           </a>
+                           <div class="collapse" id="ui-basic">
+                               <ul class="nav flex-column sub-menu">
+                                   <li class="nav-item"> <a class="nav-link" href="{{url_for('word')}}">Wordcloud</a>
+                                   </li>
+                                   <li class="nav-item"> <a class="nav-link" href="{{url_for('media')}}">Media</a></li>
+                                   <li class="nav-item"> <a class="nav-link" href="{{url_for('hari')}}">Harian</a></li>
+                                   <li class="nav-item"> <a class="nav-link" href="{{url_for('minggu')}}">Mingguan</a>
+                                   </li>
+                                   <li class="nav-item"> <a class="nav-link" href="{{url_for('bulan')}}">Bulanan</a>
+                                   </li>
+                               </ul>
+                           </div>
+                       </li>
+
+                   </ul>
+               </nav>
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="home-tab">
+
+
                                 <hr>
-                                <a type="button" class="btn btn-secondary" href="{{url_for('word')}}">Harian</a>
-                                <button type="button" class="btn btn-secondary">Mingguan</button>
-                                <button type="button" class="btn btn-secondary">Bulanan</button>
+                                {%block content%}
+                                <form action='#' method="post">
+                                    <button type="input" class="btn btn-secondary" name="hr" value="hr">Harian</button>
+                                    <button type="input" class="btn btn-secondary" name="mg" value="mg">Mingguan</button>
+                                    <button type="input" class="btn btn-secondary" name="bl" value="bl">Bulanan</button>
+                                </form>
+                                 {%endblock%}
                                 <br>
                                 <br>
 
@@ -131,8 +144,10 @@
                                     style="display:block; margin:auto;">
                                     <div class="card">
                                         <div class="card-body">
-                                           
+
                                             <h4 class="card-title">Grafik Teks</h4>
+                                            <p>Grafik ini menampilkan kata-kata yang trending, semakin besar kata maka
+                                                semakin trending {{data}}</p>
                                             <!-- <div id="chartHolder" style="width:100%; height:500px;"></div> -->
                                             <img src="{{ user_image }}" class="img-fluid" alt="Responsive image"
                                                 style="display:block; margin:auto;">

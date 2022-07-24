@@ -60,9 +60,8 @@
                 <ul class="navbar-nav">
                     <li>
 
-                        <h2 class="welcome-text"> <span class="text-black fw-bold">Grafik
-                                Trending</span></h2>
-                        <h5 class="welcome-sub-text">Application performance this day </h5>
+                        <h2 class="welcome-text"> <span class="text-secondary fw-bold">Media Berita</span></h2>
+                        <p class="welcome-sub-text">Application performance this day </p>
                     </li>
                 </ul>
 
@@ -88,6 +87,13 @@
                             <span class="menu-title">Dashboard</span>
                         </a>
                     </li>
+
+                     <li class="nav-item">
+                         <a class="nav-link" href="{{url_for('berita')}}">
+                             <i class="menu-icon mdi mdi-card-text-outline"></i>
+                             <span class="menu-title">Berita Masuk</span>
+                         </a>
+                     </li>
                     <li class="nav-item nav-category">Chart</li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
@@ -125,7 +131,7 @@
                                         <div class="card-body">
                                             <h4 class="card-title">Bar Chart Media</h4>
                                             <p>Grafik ini menampilkan jumlah berita yang dipost oleh media mainstream per-hari</p>
-                                            <canvas id="myChart" width="200" height="65"></canvas>
+                                            <canvas id="myChart" width="200" height="55"></canvas>
                                         </div>
                                     </div>
                                 </div>

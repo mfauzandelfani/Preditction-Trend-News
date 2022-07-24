@@ -37,17 +37,42 @@ def home():
     cursor.connection.commit()
     rv = cursor.fetchall()
 
-    cursor.execute('''Select title, media, date  from berita_mentah where Date(date) = CURDATE()''')
-    cursor.connection.commit()
-    rx = cursor.fetchall()  
 #Closing the cursor  
     return render_template('index.html', data = rv)
     #return render_template('index.html', tables = [hasil.to_html(classes='data')], header = "true" )
 
-@app.route('/wordcloud')    
+
+@app.route("/berita")
+def berita():
+        #Creating a connection cursor
+    cursor.execute('''Select title, media, date from berita_mentah where Date(date) = CURDATE() ''')
+    cursor.connection.commit()
+    rv = cursor.fetchall()
+
+#Closing the cursor  
+    return render_template('berita.html', data = rv)    
+
+@app.route('/wordcloud',methods = ["POST","GET"])    
 def word():
+    if request.method == 'POST':
+        if request.method == 'POST' and request.form.get('hr', '') == 'hr':
+            data = "per-hari"
+            full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'harian.png')
+            return render_template('wordcloud.html', user_image = full_filename, data = data)
+        elif request.method == 'POST' and request.form.get('mg', '') == 'mg':
+            data = "per-minggu"
+            full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'mingguan.png')
+            return render_template('wordcloud.html', user_image = full_filename, data = data)
+        elif request.method == 'POST' and request.form.get('bl', '') == 'bl':
+            data = "per-bulan"
+            full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'bulanan.png')
+            return render_template('wordcloud.html', user_image = full_filename, data = data)  
+
+    data = "per-hari"
     full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'harian.png')
-    return render_template('wordcloud.html', user_image = full_filename)
+    return render_template('wordcloud.html', user_image = full_filename, data = data)
+        
+    
 
 
 @app.route('/media')
@@ -89,19 +114,61 @@ def hari():
     listvalues2 = json.dumps(bar_values2)
 
     return render_template("harian.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
-@app.route('/mingguan')    
-def minggu():
-   
-    return render_template('mingguan.html')
 
-@app.route('/bulanan')    
+@app.route('/mingguan',methods = ["POST","GET"])    
+def minggu():
+    lb = '3'
+    gb = '5'
+    if request.method == 'POST':
+        lb = request.form["fq"]
+        gb = request.form["sg"]
+ 
+        
+    cursor.execute("SELECT DISTINCT concat(antecedents,', ',consequents) from trends WHERE length = "+lb+" and date between date_sub(now(),INTERVAL 1 WEEK) and now() group by rand() limit "+gb+";")
+    cursor.connection.commit()
+    bar_labels = cursor.fetchall()
+
+    cursor.execute("SELECT length from trends WHERE length = "+lb+" and date between date_sub(now(),INTERVAL 1 WEEK) and now() limit "+gb+";")
+    cursor.connection.commit()
+    bar_values = cursor.fetchall()
+    listvalues = json.dumps(bar_values)
+
+    cursor.execute("SELECT count(length) from trends where date between date_sub(now(),INTERVAL 1 WEEK) and now() group by length;")
+    cursor.connection.commit()
+    bar_values2 = cursor.fetchall()
+    listvalues2 = json.dumps(bar_values2)
+
+    return render_template("mingguan.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
+
+
+@app.route('/bulanan',methods = ["POST","GET"])    
 def bulan():
-    return render_template('bulanan.html')
+    lb = '3'
+    gb = '5'
+    if request.method == 'POST':
+        lb = request.form["fq"]
+        gb = request.form["sg"]
+ 
+        
+    cursor.execute("SELECT DISTINCT concat(antecedents,', ',consequents) from trends WHERE length = "+lb+" and MONTH(date)=MONTH(NOW()) group by rand() limit "+gb+";")
+    cursor.connection.commit()
+    bar_labels = cursor.fetchall()
+
+    cursor.execute("SELECT length from trends WHERE length = "+lb+" and MONTH(date)=MONTH(NOW()) limit "+gb+";")
+    cursor.connection.commit()
+    bar_values = cursor.fetchall()
+    listvalues = json.dumps(bar_values)
+
+    cursor.execute("SELECT count(length) from trends where MONTH(date)=MONTH(NOW()) group by length;")
+    cursor.connection.commit()
+    bar_values2 = cursor.fetchall()
+    listvalues2 = json.dumps(bar_values2)
+
+    return render_template("bulanan.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
+
+    
 
 
 
 if __name__ == '__main__':
    app.run(host="localhost", debug = True)
-   os.environ.setdefault('app.env', 'development')  
-   server = Server(app.wsgi_app)
-   server.serve()  
