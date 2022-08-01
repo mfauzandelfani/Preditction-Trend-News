@@ -33,7 +33,7 @@ app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
 @app.route("/")
 def home():
         #Creating a connection cursor
-    cursor.execute('''Select antecedents, consequents, date, length from trends where Date(date) = CURDATE()''')
+    cursor.execute('Select antecedents, consequents, date, length from trends where Date(date) = CURDATE()')
     cursor.connection.commit()
     rv = cursor.fetchall()
 

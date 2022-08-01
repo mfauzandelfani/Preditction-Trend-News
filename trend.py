@@ -1,3 +1,4 @@
+
 from pack import *
 
 data = []
@@ -14,6 +15,7 @@ media2=[]
 
 
 
+import time
 def scraping():
   factory = StopWordRemoverFactory()
   factory2 = StemmerFactory()
@@ -37,7 +39,9 @@ def scraping():
 
   thislist = ("Suara", "Antara", "CNBC", "Vice", "VOA", "Jawapos","Kumparan", 
   "Tempo", "Republika", "Okezone", "Tribunnews", "INews")
+
   z = 0
+  start_time=time.time() 
   for i in url:
     print(i)
     session = requests.Session()
@@ -49,6 +53,7 @@ def scraping():
     soup = BeautifulSoup(resp.content, features="xml")
     items = soup.findAll('item')
     news_items = []
+ 
     
     for x in items:
       
@@ -72,23 +77,36 @@ def scraping():
       tokens = nltk.tokenize.word_tokenize(output)
       data.append(tokens)
       media.append(thislist[z])
-    
     z += 1
-  #print(media)
 
+  
+  #print(media)
+  kec= round(time.time()-start_time,2)
   ist = pendulum.timezone('Asia/Jakarta')
   date = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
   column_names = ['Title','Link','Date','Item']
   column_names2 = ['Title','Media','Link','Date']
+  column_names3 = ['Date','Berita','Kecepatan']
+
+ 
   hasil = {"Title": title,"Link": link, "Date": date, "Item": data}
   hasil2 = {"Title": title, "Media": media, "Link": link, "Date": date}
+  
   berita = pd.DataFrame(hasil, columns = column_names)
   berita2 = pd.DataFrame(hasil2, columns = column_names2)
   berita2['Title'] = berita['Title'].astype('string')
   berita2['Link'] = berita['Link'].astype('string')
+
+  jum = berita2['Title'].count()
+  hasil3 = {"Date": date, "Berita": jum, "Kecepatan": kec}
+  berita3 = pd.DataFrame(hasil3, columns = column_names3, index=[0])
+ 
   #berita2['Date'] = berita['Date'].astype('string')            
-  # print (berita2)
-  # print (berita2.dtypes)
+  print (berita2)
+  print (berita2.dtypes)
+  print('===')
+  print(berita3)
+ 
 
   cols = "`,`".join([str(i) for i in berita2.columns.tolist()])
   for i,row in berita2.iterrows():
@@ -102,17 +120,18 @@ def scraping():
     
   dataset = berita['Item']
 
+  start_time=time.time() 
   te = TransactionEncoder()
   te_ary = te.fit(dataset).transform(dataset)
   df = pd.DataFrame(te_ary, columns=te.columns_)
-
   apriori(df, min_support=0.008, use_colnames=True)
   frequent_itemsets = apriori(df, min_support=0.008, use_colnames=True)
   frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
   frequent_itemsets
-
   rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
   print(rules)
+  kec2 = round(time.time()-start_time,2)
+  
  
   hasil = pd.DataFrame(rules)
   hasil = hasil.drop(columns=['conviction','leverage','lift','confidence','support','consequent support','antecedent support'], axis=1, inplace=False)
@@ -124,13 +143,19 @@ def scraping():
   
   hasil['antecedents'] = hasil['antecedents'].astype('string')
   hasil['consequents'] = hasil['consequents'].astype('string')
- 
+  jum2 =  hasil['length'].sum()
+
+  column_names2 = ['Date','Apriori','Kecepatan']
+  hasil2 = {"Date": date, "Apriori": jum2, "Kecepatan": kec2}
+  result2 = pd.DataFrame(hasil2, columns = column_names2, index=[0])
+
+  print(result2)
   # print(hasil)
   # print(hasil.dtypes)
     # print('=======')
     # print(list(hasil))
     
-# # creating column list for insertion
+# creating column list for insertion
   cols = "`,`".join([str(i) for i in hasil.columns.tolist()])
 
 # # # Insert DataFrame recrds one by one.
@@ -139,7 +164,7 @@ def scraping():
     cursor.execute(sql, tuple(row))
 
 
-#   # the connection is not autocommitted by default, so we must commit to save our changes
+  # the connection is not autocommitted by default, so we must commit to save our changes
   sql2 = "UPDATE trends set antecedents = replace(antecedents, 'frozenset({', '');"
   sql3 = "UPDATE trends set antecedents = replace(antecedents, '})', '');"
   sql4 = "UPDATE trends set consequents = replace(consequents, 'frozenset({', '');"
@@ -151,7 +176,8 @@ def scraping():
   cursor.execute('''UPDATE trends set antecedents = replace(antecedents, "'" , ''  );''')
   cursor.execute('''UPDATE trends set consequents = replace(consequents, "'" , ''  );''')
   conn.commit()
-  sql6 = '''DELETE t1 FROM trends t1 INNER JOIN trends t2 WHERE t1.no < t2.no AND t1.antecedents = t2.antecedents AND t1.consequents = t2.consequents;'''
+  sql6 = '''DELETE t1 FROM trends t1 INNER JOIN trends t2 WHERE t1.no < t2.no AND t1.antecedents = 
+          t2.antecedents AND t1.consequents = t2.consequents;'''
   cursor.execute(sql6)
   conn.commit()
 
