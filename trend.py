@@ -192,5 +192,8 @@ def scraping():
   cursor.execute(sql6)
   conn.commit()
 
-scraping()
+from apscheduler.schedulers.blocking import BlockingScheduler
+scheduler = BlockingScheduler()
+scheduler.add_job(scraping, 'interval', minutes=1)
+scheduler.start()
 
