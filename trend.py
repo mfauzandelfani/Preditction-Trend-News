@@ -109,9 +109,16 @@ def scraping():
  
 
   cols = "`,`".join([str(i) for i in berita2.columns.tolist()])
+  cols2 = "`,`".join([str(i) for i in berita3.columns.tolist()])
+
   for i,row in berita2.iterrows():
     sql = "INSERT INTO `berita_mentah` (`" +cols + "`) VALUES (" + "%s,"*(len(row)-1) + "%s)"
     cursor.execute(sql, tuple(row))
+
+  for i,row in berita3.iterrows():
+    sql3 = "INSERT INTO `prepro` (`" +cols2 + "`) VALUES (" + "%s,"*(len(row)-1) + "%s)"
+    cursor.execute(sql3, tuple(row))
+
   conn.commit()
   sql2 = '''DELETE t1 FROM berita_mentah t1 INNER JOIN berita_mentah t2 WHERE t1.no < t2.no AND t1.title = t2.title AND t1.link = t2.link;'''
 
@@ -157,11 +164,15 @@ def scraping():
     
 # creating column list for insertion
   cols = "`,`".join([str(i) for i in hasil.columns.tolist()])
+  cols2 = "`,`".join([str(i) for i in result2.columns.tolist()])
 
 # # # Insert DataFrame recrds one by one.
   for i,row in hasil.iterrows():
     sql = "INSERT INTO `trends` (`" +cols + "`) VALUES (" + "%s,"*(len(row)-1) + "%s)"
     cursor.execute(sql, tuple(row))
+  for i,row in result2.iterrows():
+    sql7 = "INSERT INTO `algo` (`" +cols2 + "`) VALUES (" + "%s,"*(len(row)-1) + "%s)"
+    cursor.execute(sql7, tuple(row))  
 
 
   # the connection is not autocommitted by default, so we must commit to save our changes
