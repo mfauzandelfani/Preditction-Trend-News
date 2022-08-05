@@ -2,15 +2,7 @@ from cProfile import label
 from pickle import TRUE
 from urllib import response
 from flask import Flask, redirect, render_template, request, url_for
-from flask_cors import CORS, cross_origin
 import os
-from flask import jsonify
-from flask import flash, request
-import urllib.request
-from matplotlib.font_manager import json_dump, json_load
-from matplotlib.pyplot import bar_label
-from pendulum import time
-import requests
 from flask import json
 from database import *
 from livereload import Server
@@ -19,7 +11,7 @@ from livereload import Server
 PEOPLE_FOLDER = 'static/'
 
 app = Flask(__name__)
-CORS(app)
+
 
 app.env = "development"
 
