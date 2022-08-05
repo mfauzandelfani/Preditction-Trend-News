@@ -4,8 +4,17 @@ from flask import json
 from database import *
 
 
+
+PEOPLE_FOLDER = 'static/'
+
 app = Flask(__name__)
+
+
 app.env = "development"
+
+
+app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
+
 
     
 @app.route("/")
