@@ -3,7 +3,6 @@ from pickle import TRUE
 from urllib import response
 from flask import Flask, redirect, render_template, request, url_for
 from flask_cors import CORS, cross_origin
-from flask_bootstrap import Bootstrap5
 from flask_mysqldb import MySQL
 import os
 from flask import jsonify
@@ -24,7 +23,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.env = "development"
-bootstrap = Bootstrap5(app)
+
 
 app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
 
