@@ -3,7 +3,6 @@ from pickle import TRUE
 from urllib import response
 from flask import Flask, redirect, render_template, request, url_for
 from flask_cors import CORS, cross_origin
-from flask_mysqldb import MySQL
 import os
 from flask import jsonify
 from flask import flash, request
