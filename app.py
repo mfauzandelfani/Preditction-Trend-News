@@ -1,11 +1,8 @@
-from cProfile import label
-from pickle import TRUE
-from urllib import response
 from flask import Flask, redirect, render_template, request, url_for
 import os
 from flask import json
 from database import *
-from livereload import Server
+
 
 
 PEOPLE_FOLDER = 'static/'
@@ -157,8 +154,6 @@ def bulan():
     return render_template("bulanan.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
 
     
-
-
 
 if __name__ == '__main__':
    app.run(host="localhost", debug = True)
