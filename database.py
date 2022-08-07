@@ -1,7 +1,10 @@
 import pymysql
 
+global connect_timeout
+global max_allowed_packet
 conn = pymysql.connect(host='localhost',
                          user='root',
                          password='',
-                         db='n1681648_berita')
+                         db='berita'
+                      )
 cursor = conn.cursor()

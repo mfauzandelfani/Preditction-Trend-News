@@ -194,6 +194,5 @@ def scraping():
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 scheduler = BlockingScheduler()
-scheduler.add_job(scraping, 'interval', minutes=1)
+scheduler.add_job(scraping, 'interval', hours=4)
 scheduler.start()
-

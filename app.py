@@ -2,8 +2,7 @@ from flask import Flask, redirect, render_template, request, url_for
 import os
 from flask import json
 from database import *
-
-
+import time
 
 PEOPLE_FOLDER = 'static/'
 
@@ -19,11 +18,11 @@ app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
     
 @app.route("/")
 def home():
-        #Creating a connection cursor
+        #Creating a connection cursor     
     cursor.execute('Select antecedents, consequents, date, length from trends where Date(date) = CURDATE()')
     cursor.connection.commit()
     rv = cursor.fetchall()
-
+    time.sleep(1)
 #Closing the cursor  
     return render_template('index.html', data = rv)
     #return render_template('index.html', tables = [hasil.to_html(classes='data')], header = "true" )
@@ -35,7 +34,7 @@ def berita():
     cursor.execute('''Select title, media, date from berita_mentah where Date(date) = CURDATE() ''')
     cursor.connection.commit()
     rv = cursor.fetchall()
-
+    time.sleep(1)
 #Closing the cursor  
     return render_template('berita.html', data = rv)    
 
@@ -69,11 +68,12 @@ def media():
     cursor.execute('''SELECT media from berita_mentah group by media;''')
     cursor.connection.commit()
     bar_labels = cursor.fetchall()
-
+    time.sleep(1)
     cursor.execute('''SELECT count(media) from berita_mentah where Date(date) = CURDATE() group by media;''')
     cursor.connection.commit()
     bar_values = cursor.fetchall()
     listvalues = json.dumps(bar_values)
+    time.sleep(1)
     return render_template('media.html', labels=bar_labels, values = listvalues, legend = legend )    
 
 
@@ -89,17 +89,17 @@ def hari():
     cursor.execute("SELECT DISTINCT concat(antecedents,', ',consequents) from trends WHERE length = "+lb+" and DATE(date) = curdate() group by rand() limit "+gb+";")
     cursor.connection.commit()
     bar_labels = cursor.fetchall()
-
+    time.sleep(1)
     cursor.execute("SELECT length from trends WHERE length = "+lb+" and DATE(date) = curdate() limit "+gb+";")
     cursor.connection.commit()
     bar_values = cursor.fetchall()
     listvalues = json.dumps(bar_values)
-
+    time.sleep(1)
     cursor.execute("SELECT count(length) from trends where DATE(date) = curdate() group by length;")
     cursor.connection.commit()
     bar_values2 = cursor.fetchall()
     listvalues2 = json.dumps(bar_values2)
-
+    time.sleep(1)
     return render_template("harian.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
 
 @app.route('/mingguan',methods = ["POST","GET"])    
@@ -114,17 +114,17 @@ def minggu():
     cursor.execute("SELECT DISTINCT concat(antecedents,', ',consequents) from trends WHERE length = "+lb+" and date between date_sub(now(),INTERVAL 1 WEEK) and now() group by rand() limit "+gb+";")
     cursor.connection.commit()
     bar_labels = cursor.fetchall()
-
+    time.sleep(1)
     cursor.execute("SELECT length from trends WHERE length = "+lb+" and date between date_sub(now(),INTERVAL 1 WEEK) and now() limit "+gb+";")
     cursor.connection.commit()
     bar_values = cursor.fetchall()
     listvalues = json.dumps(bar_values)
-
+    time.sleep(1)
     cursor.execute("SELECT count(length) from trends where date between date_sub(now(),INTERVAL 1 WEEK) and now() group by length;")
     cursor.connection.commit()
     bar_values2 = cursor.fetchall()
     listvalues2 = json.dumps(bar_values2)
-
+    time.sleep(1)
     return render_template("mingguan.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
 
 
@@ -140,17 +140,17 @@ def bulan():
     cursor.execute("SELECT DISTINCT concat(antecedents,', ',consequents) from trends WHERE length = "+lb+" and MONTH(date)=MONTH(NOW()) group by rand() limit "+gb+";")
     cursor.connection.commit()
     bar_labels = cursor.fetchall()
-
+    time.sleep(1)
     cursor.execute("SELECT length from trends WHERE length = "+lb+" and MONTH(date)=MONTH(NOW()) limit "+gb+";")
     cursor.connection.commit()
     bar_values = cursor.fetchall()
     listvalues = json.dumps(bar_values)
-
+    time.sleep(1)
     cursor.execute("SELECT count(length) from trends where MONTH(date)=MONTH(NOW()) group by length;")
     cursor.connection.commit()
     bar_values2 = cursor.fetchall()
     listvalues2 = json.dumps(bar_values2)
-
+    time.sleep(1)
     return render_template("bulanan.html", labels = bar_labels, values = listvalues, values2 = listvalues2)
 
     
