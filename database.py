@@ -1,10 +1,15 @@
-import pymysql
+import mysql.connector
+# from pymysql.cursors import DictCursor
+import pymongo
+from pymongo import MongoClient
 
-global connect_timeout
-global max_allowed_packet
-conn = pymysql.connect(host='localhost',
+conn = mysql.connector.connect(host='localhost',
                          user='root',
                          password='',
                          db='berita'
+                       
                       )
+
 cursor = conn.cursor()
+
+cluster = MongoClient('mongodb+srv://admin:rhoiOqUAvMel4UWt@cluster0.pvms5.mongodb.net/test')
