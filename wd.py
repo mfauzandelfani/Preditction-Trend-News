@@ -4,7 +4,6 @@ def wordcloud():
 
   wordcloudsql = 'select antecedents, consequents from trends where DATE(date) = curdate()'
   cursor.execute(wordcloudsql) 
-  conn.commit()
   rv = cursor.fetchall()
   rv = str(rv)
   res = re.sub(r"[^\w\s\<.*?>]", '', rv)

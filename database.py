@@ -1,9 +1,8 @@
-import mysql.connector
+import pymysql
 # from pymysql.cursors import DictCursor
-import pymongo
-from pymongo import MongoClient
 
-conn = mysql.connector.connect(host='localhost',
+
+conn = pymysql.connect(host='localhost',
                          user='root',
                          password='',
                          db='berita'
@@ -12,4 +11,4 @@ conn = mysql.connector.connect(host='localhost',
 
 cursor = conn.cursor()
 
-cluster = MongoClient('mongodb+srv://admin:rhoiOqUAvMel4UWt@cluster0.pvms5.mongodb.net/test')
+
