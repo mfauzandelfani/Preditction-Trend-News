@@ -1,1 +1,3 @@
 # Preditction-Trend-News
+
+MACHINE LEARNING (TEXT MINING) WITH PYTHON
